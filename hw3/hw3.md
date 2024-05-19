@@ -1,5 +1,11 @@
 # Getting on the WiFi
 
+## Connecting to the Workstation
+
+```
+ $ ssh kali@edie.cs.pdx.edu -i edie -J sawyeras@linux.cs.pdx.edu 
+```
+
 ## Card Mode
 The card was already in monitor mode from the previous password cracking
 exercise, but I for some reason `bettercap` wasn't getting anything from `wifi.show` at first. 
