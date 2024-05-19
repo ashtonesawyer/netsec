@@ -1,4 +1,4 @@
-# Password Cracking
+# Getting on the WiFi
 
 ## Card Mode
 The card was already in monitor mode from the previous password cracking
@@ -216,5 +216,102 @@ Device 'wlan0' successfully activated with '52796feb-4833-46c6-b196-8e18e42f8bb6
 ![Connected to NetSec](./img/connection.png)
 
 # Nmap
+I didn't scan the clients that were other workstations (i.e ivan and edie from above)
+```
+ $ sudo nmap -sn 192.168.0.187/24
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:20 PDT
+Nmap scan report for Archer (192.168.0.1)
+Host is up (0.0034s latency).
+MAC Address: 28:87:BA:75:7E:98 (TP-Link Limited)
+Nmap scan report for 192.168.0.47
+Host is up (0.10s latency).
+MAC Address: 70:F7:54:FF:1C:59 (Ampak Technology)
+Nmap scan report for ivan (192.168.0.131)
+Host is up (0.0090s latency).
+MAC Address: 00:C0:CA:B0:61:B9 (Alfa)
+Nmap scan report for 192.168.0.139
+Host is up (0.0037s latency).
+MAC Address: D8:3A:DD:7E:3C:31 (Unknown)
+Nmap scan report for reterm-i (192.168.0.240)
+Host is up (0.031s latency).
+MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
+Nmap scan report for edie (192.168.0.187)
+Host is up.
+Nmap done: 256 IP addresses (6 hosts up) scanned in 1.90 seconds
+
+ $ sudo nmap 192.168.0.47
+sudo nmap -sV 192.168.0.47
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:24 PDT
+Nmap scan report for Khadas (192.168.0.47)
+Host is up (0.0079s latency).
+Not shown: 998 closed tcp ports (reset)
+PORT    STATE SERVICE VERSION
+22/tcp  open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.6 (Ubuntu Linux; protocol 2.0)
+631/tcp open  ipp     CUPS 2.4
+MAC Address: 70:F7:54:FF:1C:59 (Ampak Technology)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 6.75 seconds
+
+ $ sudo nmap -sV 192.168.0.139
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:25 PDT
+Nmap scan report for bookworm (192.168.0.139)
+Host is up (0.0056s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT     STATE SERVICE         VERSION
+22/tcp   open  ssh             OpenSSH 9.2p1 Debian 2+deb12u2 (protocol 2.0)
+1935/tcp open  rtmp?
+8888/tcp open  sun-answerbook?
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8888-TCP:V=7.94SVN%I=7%D=5/18%Time=6649713A%P=x86_64-pc-linux-gnu%r
+SF:(GetRequest,D9,"HTTP/1\.0\x20404\x20Not\x20Found\r\nAccess-Control-Allo
+SF:w-Credentials:\x20true\r\nAccess-Control-Allow-Origin:\x20\*\r\nContent
+SF:-Type:\x20text/plain\r\nServer:\x20mediamtx\r\nDate:\x20Fri,\x2017\x20M
+SF:ay\x202024\x2010:30:05\x20GMT\r\nContent-Length:\x2018\r\n\r\n404\x20pa
+SF:ge\x20not\x20found")%r(HTTPOptions,FA,"HTTP/1\.0\x20204\x20No\x20Conten
+SF:t\r\nAccess-Control-Allow-Credentials:\x20true\r\nAccess-Control-Allow-
+SF:Headers:\x20Authorization,\x20Range\r\nAccess-Control-Allow-Methods:\x2
+SF:0OPTIONS,\x20GET\r\nAccess-Control-Allow-Origin:\x20\*\r\nServer:\x20me
+SF:diamtx\r\nDate:\x20Fri,\x2017\x20May\x202024\x2010:30:05\x20GMT\r\n\r\n
+SF:")%r(FourOhFourRequest,DD,"HTTP/1\.0\x20301\x20Moved\x20Permanently\r\n
+SF:Access-Control-Allow-Credentials:\x20true\r\nAccess-Control-Allow-Origi
+SF:n:\x20\*\r\nLocation:\x20/nice\x20ports,/Trinity\.txt\.bak/\r\nServer:\
+SF:x20mediamtx\r\nDate:\x20Fri,\x2017\x20May\x202024\x2010:30:05\x20GMT\r\
+SF:nContent-Length:\x200\r\n\r\n")%r(LSCP,67,"HTTP/1\.1\x20400\x20Bad\x20R
+SF:equest\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\
+SF:x20close\r\n\r\n400\x20Bad\x20Request")%r(GenericLines,67,"HTTP/1\.1\x2
+SF:0400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8
+SF:\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(RTSPRequest,6
+SF:7,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x
+SF:20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%
+SF:r(Help,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/
+SF:plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Re
+SF:quest")%r(SSLSessionReq,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConte
+SF:nt-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\
+SF:n400\x20Bad\x20Request")%r(TerminalServerCookie,67,"HTTP/1\.1\x20400\x2
+SF:0Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nCon
+SF:nection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(TLSSessionReq,67,"HT
+SF:TP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20cha
+SF:rset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request");
+MAC Address: D8:3A:DD:7E:3C:31 (Unknown)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 87.72 seconds
+
+ $ sudo nmap -sV 192.168.0.240
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:28 PDT
+Nmap scan report for reterm-i (192.168.0.240)
+Host is up (0.0068s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.2p1 Debian 2+deb12u2 (protocol 2.0)
+MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 0.66 seconds
+```
 
 # RTSP Stream
