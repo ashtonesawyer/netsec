@@ -1,3 +1,5 @@
+[[__TOC__]]
+
 # Getting on the WiFi
 
 ## Connecting to the Workstation
@@ -223,7 +225,16 @@ Device 'wlan0' successfully activated with '52796feb-4833-46c6-b196-8e18e42f8bb6
 
 # Nmap
 I didn't scan the clients that were other workstations (i.e ivan and edie from above)
+
 ```
+ $ ip a s
+...
+6: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 00:c0:ca:b2:eb:61 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.187/24 brd 192.168.0.255 scope global dynamic noprefixroute wlan0
+       valid_lft 5019sec preferred_lft 5019sec
+    inet6 fe80::78d:a2e3:8c5a:3175/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
  $ sudo nmap -sn 192.168.0.187/24
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-18 20:20 PDT
 Nmap scan report for Archer (192.168.0.1)
