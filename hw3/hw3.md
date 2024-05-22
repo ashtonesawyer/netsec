@@ -319,7 +319,7 @@ Nmap done: 1 IP address (1 host up) scanned in 42.05 seconds
 
 # RTSP Stream
 
-````
+```
  local-vm$ ssh -NL 8888:192.168.0.139:8888 kali@edie.cs.pdx.edu -i edie
  local-vm$ firefox localhost:8888/cam
 ```
