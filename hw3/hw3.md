@@ -325,3 +325,10 @@ Nmap done: 1 IP address (1 host up) scanned in 42.05 seconds
 ```
 
 ![Stream screenshot](./img/stream.png)
+
+The stream is looking at a hard drive. 
+
+- Brand: Western Digital
+- Model: VelociRaptor
+- Manufactured: 03 Oct 2014 (?)
+- Capacity: 500 GB
