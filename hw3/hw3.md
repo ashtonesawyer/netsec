@@ -300,7 +300,13 @@ PORT   STATE SERVICE VERSION
 22/tcp open  ssh     OpenSSH 9.2p1 Debian 2+deb12u2 (protocol 2.0)
 MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+```
 
+`192.168.0.139` looked the most promising because it had the most open (and because it was shown in class...)
+so I did a wider scan on it.
+
+
+```
  $ sudo nmap -sT -T5 192.168.0.139 -p1-65535
 Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-21 17:18 PDT
 Warning: 192.168.0.139 giving up on port because retransmission cap hit (2).
@@ -318,6 +324,30 @@ Nmap done: 1 IP address (1 host up) scanned in 42.05 seconds
 ```
 
 # RTSP Stream
+To look at the RTSP stream, I needed to set up a tunnel from my local VM to 192.168.0.139:8554 through `edie`. 
+
+Note that the last part of the URL (`/cam`) is something you either have to see in a packet or guess. In this case
+it was given in class.
+
+```
+ local-vm$ ssh -NL 8554:192.168.0.139:8554 kali@edie.cs.pdx.edu -i edie
+
+ local-vm$ vlc rtsp://localhost:8554/cam
+VLC media player 3.0.20 Vetinari (revision 3.0.20-0-g6f0d0ab126b)
+[0000563f83812550] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+MESA: error: ZINK: failed to choose pdev
+glx: failed to create drisw screen
+failed to load driver: zink
+[00007f0e90001580] satip stream error: read error: Connection reset by peer
+[00007f0e90001580] satip stream error: Failed to setup RTSP session
+[00007f0e90001580] main stream error: read error: Connection reset by peer
+[00007f0e90001580] main stream error: read error: Connection reset by peer
+
+channel 2: open failed: connect failed: Network is unreachable
+channel 2: open failed: connect failed: Network is unreachable
+```
+
+Because that wasn't working, I used the HTTPS port to connect instead. 
 
 ```
  local-vm$ ssh -NL 8888:192.168.0.139:8888 kali@edie.cs.pdx.edu -i edie
