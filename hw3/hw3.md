@@ -347,7 +347,8 @@ channel 2: open failed: connect failed: Network is unreachable
 channel 2: open failed: connect failed: Network is unreachable
 ```
 
-Because that wasn't working, I used the HTTPS port to connect instead. 
+Because that wasn't working, I used the sun-answerbook port instead and accessed the stream
+through the browser.
 
 ```
  local-vm$ ssh -NL 8888:192.168.0.139:8888 kali@edie.cs.pdx.edu -i edie
