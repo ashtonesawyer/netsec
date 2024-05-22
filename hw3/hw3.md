@@ -6,7 +6,7 @@
 
 
 ```
- $ ssh kali@edie.cs.pdx.edu -i edie -J sawyeras@linux.cs.pdx.edu 
+ local-vm$ ssh kali@edie.cs.pdx.edu -i edie -J sawyeras@linux.cs.pdx.edu 
 ```
 
 ## Card Mode
@@ -301,6 +301,27 @@ PORT   STATE SERVICE VERSION
 MAC Address: E4:5F:01:91:0C:52 (Raspberry Pi Trading)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
+ $ sudo nmap -sT -T5 192.168.0.139 -p1-65535
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2024-05-21 17:18 PDT
+Warning: 192.168.0.139 giving up on port because retransmission cap hit (2).
+Nmap scan report for bookworm (192.168.0.139)
+Host is up (0.00090s latency).
+Not shown: 36973 filtered tcp ports (net-unreach), 19787 filtered tcp ports (no-response), 8772 closed tcp ports (conn-refused)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+8554/tcp open  rtsp-alt
+8888/tcp open  sun-answerbook
+MAC Address: D8:3A:DD:7E:3C:31 (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 42.05 seconds
+
 ```
 
 # RTSP Stream
+
+````
+ local-vm$ ssh -NL 8888:192.168.0.139:8888 kali@edie.cs.pdx.edu -i edie
+ local-vm$ firefox localhost:8888/cam
+```
+
+![Stream screenshot](./img/stream.png)
