@@ -1,7 +1,9 @@
+[[_TOC_]]
+
 # Getting the update
 ## Wireshark
 Looking through the pcap in Wireshark showed multiple packets with the payload `GET /download?name=firmware.bin...`.
-These packets were from 192.168.86.167 to 192.168.86.228:5000. 
+These packets were from `192.168.86.167` to `192.168.86.228:5000`. 
 
 ## Scapy
 Initialize:
