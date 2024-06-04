@@ -122,104 +122,60 @@ DECIMAL       HEXADECIMAL     DESCRIPTION
 
 ```
  $ cd _update.extracted/squashfs-root/
- $ file /bin/busybox
-busybox: ELF 32-bit LSB executable, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, interpreter /lib/ld-musl-mipsel-sf.so.1, no section header
+ $ file bin/busybox
+bin/busybox: ELF 32-bit LSB executable, MIPS, MIPS32 rel2 version 1 (SYSV), dynamically linked, interpreter /lib/ld-musl-mipsel-sf.so.1, no section header
+
 ```
 This is a MIPS32 system
 
 ## OS
 ```
- $ cat /etc/os-release
-PRETTY_NAME="Kali GNU/Linux Rolling"
-NAME="Kali GNU/Linux"
-VERSION_ID="2024.1"
-VERSION="2024.1"
-VERSION_CODENAME=kali-rolling
-ID=kali
-ID_LIKE=debian
-HOME_URL="https://www.kali.org/"
-SUPPORT_URL="https://forums.kali.org/"
-BUG_REPORT_URL="https://bugs.kali.org/"
-ANSI_COLOR="1;31"
+ $ cat etc/os-release
+NAME="OpenWrt"
+VERSION="18.06.2"
+ID="openwrt"
+ID_LIKE="lede openwrt"
+PRETTY_NAME="OpenWrt 18.06.2"
+VERSION_ID="18.06.2"
+HOME_URL="http://openwrt.org/"
+BUG_URL="http://bugs.openwrt.org/"
+SUPPORT_URL="http://forum.lede-project.org/"
+BUILD_ID="r7676-cddd7b4c77"
+LEDE_BOARD="ramips/rt288x"
+LEDE_ARCH="mipsel_24kc"
+LEDE_TAINTS=""
+LEDE_DEVICE_MANUFACTURER="OpenWrt"
+LEDE_DEVICE_MANUFACTURER_URL="http://openwrt.org/"
+LEDE_DEVICE_PRODUCT="Generic"
+LEDE_DEVICE_REVISION="v0"
+LEDE_RELEASE="OpenWrt 18.06.2 r7676-cddd7b4c77"
 ```
 
-It's running Kali 2024.1
+It's running OpenWrt 18.06.2
 
 ## Users
 ```
- $ ls /usr
-       bin/                    libexec/
-       games/                  local/
-       i686-w64-mingw32/       sbin/
-       include/                share/
-       lib/                    src/
-       lib32/                  x86_64-w64-mingw32/
-       lib64/                  x86_64-w64-mingw32ucrt/
+ $ ls usr
+       bin/       libexec/       share/
+       lib/       sbin/
 
- $ cat /etc/passwd
-root:x:0:0:root:/root:/usr/bin/zsh
-daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
-bin:x:2:2:bin:/bin:/usr/sbin/nologin
-sys:x:3:3:sys:/dev:/usr/sbin/nologin
-sync:x:4:65534:sync:/bin:/bin/sync
-games:x:5:60:games:/usr/games:/usr/sbin/nologin
-man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
-lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
-mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
-news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
-uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
-proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
-www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
-backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
-list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
-irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
-_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
-nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
-systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
-_galera:x:100:65534::/nonexistent:/usr/sbin/nologin
-mysql:x:101:102:MariaDB Server,,,:/nonexistent:/bin/false
-tss:x:102:103:TPM software stack,,,:/var/lib/tpm:/bin/false
-systemd-coredump:x:992:992:systemd Core Dumper:/:/usr/sbin/nologin
-systemd-timesync:x:991:991:systemd Time Synchronization:/:/usr/sbin/nologin
-redsocks:x:103:104::/var/run/redsocks:/usr/sbin/nologin
-rwhod:x:104:65534::/var/spool/rwho:/usr/sbin/nologin
-_gophish:x:105:106::/var/lib/gophish:/usr/sbin/nologin
-iodine:x:106:65534::/run/iodine:/usr/sbin/nologin
-messagebus:x:107:107::/nonexistent:/usr/sbin/nologin
-miredo:x:108:65534::/var/run/miredo:/usr/sbin/nologin
-redis:x:109:110::/var/lib/redis:/usr/sbin/nologin
-usbmux:x:110:46:usbmux daemon,,,:/var/lib/usbmux:/usr/sbin/nologin
-mosquitto:x:111:112::/var/lib/mosquitto:/usr/sbin/nologin
-tcpdump:x:112:114::/nonexistent:/usr/sbin/nologin
-sshd:x:113:65534::/run/sshd:/usr/sbin/nologin
-_rpc:x:114:65534::/run/rpcbind:/usr/sbin/nologin
-dnsmasq:x:115:65534:dnsmasq,,,:/var/lib/misc:/usr/sbin/nologin
-statd:x:116:65534::/var/lib/nfs:/usr/sbin/nologin
-avahi:x:117:118:Avahi mDNS daemon,,,:/run/avahi-daemon:/usr/sbin/nologin
-stunnel4:x:990:990:stunnel service system account:/var/run/stunnel4:/usr/sbin/nologin
-Debian-snmp:x:118:119::/var/lib/snmp:/bin/false
-_gvm:x:119:120::/var/lib/openvas:/usr/sbin/nologin
-speech-dispatcher:x:120:29:Speech Dispatcher,,,:/run/speech-dispatcher:/bin/false
-sslh:x:121:122::/nonexistent:/usr/sbin/nologin
-postgres:x:122:123:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
-pulse:x:123:124:PulseAudio daemon,,,:/run/pulse:/usr/sbin/nologin
-inetsim:x:124:126::/var/lib/inetsim:/usr/sbin/nologin
-geoclue:x:125:127::/var/lib/geoclue:/usr/sbin/nologin
-sddm:x:126:128:Simple Desktop Display Manager:/var/lib/sddm:/bin/false
-polkitd:x:988:988:polkit:/nonexistent:/usr/sbin/nologin
-rtkit:x:127:129:RealtimeKit,,,:/proc:/usr/sbin/nologin
-sawyeras:x:1000:1000:Ash,,,:/home/sawyeras:/usr/bin/zsh
-fwupd-refresh:x:987:987:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
-freerad-wpe:x:128:132::/etc/freeradius-wpe:/usr/sbin/nologin
-Debian-exim:x:129:133::/var/spool/exim4:/usr/sbin/nologin
-beef-xss:x:130:135::/var/lib/beef-xss:/usr/sbin/nologin
-xrdp:x:131:136::/run/xrdp:/usr/sbin/nologin
+ $ cat etc/passwd
+root:x:0:0:root:/root:/bin/ash
+daemon:*:1:1:daemon:/var:/bin/false
+ftp:*:55:55:ftp:/home/ftp:/bin/false
+network:*:101:101:network:/var:/bin/false
+nobody:*:65534:65534:nobody:/var:/bin/false
+dnsmasq:x:453:453:dnsmasq:/var/run/dnsmasq:/bin/false
 ```
 
 There aren't any human users, but there are some services.
 
 ### Cracking `root` Password
 ```
+ $ head etc/shadow
+root:$6$19yJir3t$DKemu8nRjxvuPbDZdZcdtsJiiVd7zAXN7Q63.eepYT.R0LqsDMYCzwetEO58sPROWiVfhY1Aeu3O3awr57fv50:17994:0:99999:7:::
+...
+
  $ echo -n '$6$19yJir3t$DKemu8nRjxvuPbDZdZcdtsJiiVd7zAXN7Q63.eepYT.R0LqsDMYCzwetEO58sPROWiVfhY1Aeu3O3awr57fv50' > crackme
  $ hashcat -O crackme /usr/share/wordlists/fasttrack.txt
 ...
