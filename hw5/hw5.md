@@ -1,3 +1,5 @@
+[[_TOC_]]
+
 # Docker
 I used the docker file that was provided in the homework:
 
@@ -59,8 +61,8 @@ Successfully tagged aflnet:latest
 root@34ee24d8d793:/#
 ```
 
-# Exercise 1
-## Live555
+# Exercise 1 - Live555
+## Patching
 I didn't really have to patch and remake live555 because that was already done in the 
 dockerfile, but I didn't notice that until I'd already done it. 
 
@@ -160,6 +162,8 @@ Session: DA1F3B26;timeout=65
 Because the subsession wasn't set up correctly, I was only able to capture two of the four requests, so I 
 grabbed the [data in the repo](https://raw.githubusercontent.com/aflnet/aflnet/master/tutorials/live555/in-rtsp/rtsp_requests_wav.raw)
 
+## Fuzzing
+
 ```
  > afl-fuzz -d -i $AFLNET/tutorials/live555/in-rtsp/ -o out-live555 -N tcp://127.0.0.1/8554 -x $AFLNET/tutorials/live555/rtsp.dict -P RTSP -D 10000 -q 3 -s 3 -E -K -R ./testOnDemandRTSPServer 8554
 afl-fuzz 2.56b by <lcamtuf@google.com>
@@ -205,3 +209,174 @@ I tried to fix the core dump problem, but it kept complaining about it being a r
 So I just ignored it. 
 
 ![start aflnet](./img/aflnet-start.png)
+
+```
+ > cat out-live555/fuzzer_stats
+start_time        : 1717096405
+last_update       : 1717111739
+fuzzer_pid        : 1029
+cycles_done       : 124
+execs_done        : 170483
+execs_per_sec     : 11.08
+paths_total       : 980
+paths_favored     : 51
+paths_found       : 973
+paths_imported    : 0
+max_depth         : 8
+cur_path          : 959
+pending_favs      : 0
+pending_total     : 764
+variable_paths    : 901
+stability         : 26.97%
+bitmap_cvg        : 9.42%
+unique_crashes    : 47
+unique_hangs      : 0
+last_path         : 1717111691
+last_crash        : 1717111189
+last_hang         : 0
+execs_since_crash : 5395
+exec_timeout      : 120
+afl_banner        : testOnDemandRTSPServer
+afl_version       : 2.56b
+target_mode       : default
+command_line      : afl-fuzz -d -i /opt/aflnet/tutorials/live555/in-rtsp/ -o out-live555 -N tcp://127.0.0.1/8554 -x /opt/aflnet/tutorials/live555/rtsp.dict -P RTSP -D 10000 -q 3 -s 3 -E -K -R ./testOnDemandRTSPServer 8554
+slowest_exec_ms   : 0
+peak_rss_mb       : 7
+
+## Replay
+```
+ > ./testOnDemandRTSPServer 8554                    | > aflnet-replay $AFLNET/tutorials/live555/CVE_2019_7314.poc RTSP 8554
+                                                    |
+                                                    |Size of the current packet 1 is  97
+                                                    |
+                                                    |Size of the current packet 2 is  20000
+                                                    |
+                                                    |--------------------------------
+                                                    |Responses from server:0-201-
+                                                    |++++++++++++++++++++++++++++++++
+...                                                 |Responses in details:
+                                                    |RTSP/1.0 201 OK
+                                                    |CSeq: 3^M
+                                                    |Date: Thu, May 30 2024 23:39:41 GMT
+                                                    |Transport: RTP/AVP/TCP;unicast;destination=127.0.0.1;source=127.0.0.1;interleaved=0-1
+                                                    |Session: 000022B8;timeout=65
+                                                    |
+                                                    |$4Uz{V47Uz
+                                                    |          34ee24d8d793$
+                                                    |48Uz.45
+                                                    |-------------------------------->
+Segmentation fault (core dumped)                    |
+```
+
+# Exercise 2 - Dnsmasq
+## Setup
+I created this script from the tutorial and ran it. 
+
+```bash
+
+# clone + cd into the repo
+git clone git://thekelleys.org.uk/dnsmasq.git
+cd dnsmasq
+
+# checkout the correct version
+git checkout v2.73rc6
+
+# compile
+CC=$AFLNET/afl-clang-fast make
+
+# copy the config file
+sudo cp $AFLNET/tutorials/dnsmasq/dnsmasq.conf /etc/
+
+# move to the correct directory
+cd src/
+```
+
+### Testing 
+```
+ > echo address=/test.com/5.5.5.5 | sudo tee -a /etc/dnsmasq.conf
+address=/test.com/5.5.5.5
+ >  ./dnsmasq
+dnsmasq: started, version 2.73rc6 cachesize 150
+dnsmasq: compile time options: IPv6 GNU-getopt no-DBus no-i18n no-IDN DHCP DHCPv6 no-Lua TFTP no-conntrack ipset auth no-DNSSEC loop-detect inotify
+dnsmasq: cleared cache
+
+ > dig @127.0.0.1 -p 5353 test.com
+
+; <<>> DiG 9.11.3-1ubuntu1.18-Ubuntu <<>> @127.0.0.1 -p 5353 test.com
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 15677
+;; flags: qr aa rd ra ad; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;test.com.                      IN      A
+
+;; ANSWER SECTION:
+test.com.               0       IN      A       5.5.5.5
+
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#5353(127.0.0.1)
+;; WHEN: Tue Jun 04 19:05:23 UTC 2024
+;; MSG SIZE  rcvd: 42
+
+```
+
+## Getting seeds
+```
+ > sudo tcpdump -w dns.pcap -i lo 
+tcpdump: listening on lo, link-type EN10MB (Ethernet), capture size 262144 bytes
+
+ > dig @127.0.0.1 -p 5353 google.com
+ > dig @127.0.0.1 -p 5353 google.com NS
+ > dig @127.0.0.1 -p 5353 test.com
+ > dig @127.0.0.1 -p 5353 -x 142.251.211.238
+
+```
+
+I openned `dns.pcap` in Wireshark and exported the requests from each UDP stream into its own file,
+then put them all together with `cat dns*.raw > dns.raw`.
+
+```
+ $ xxd dns.raw
+00000000: e469 0120 0001 0000 0000 0001 0667 6f6f  .i. .........goo
+00000010: 676c 6503 636f 6d00 0002 0001 0000 2910  gle.com.......).
+00000020: 0000 0000 0000 0c00 0a00 08ba b0ae 6ed1  ..............n.
+00000030: a78d 6bbe 0b01 2000 0100 0000 0000 0106  ..k... .........
+00000040: 676f 6f67 6c65 0363 6f6d 0000 0100 0100  google.com......
+00000050: 0029 1000 0000 0000 000c 000a 0008 6377  .)............cw
+00000060: 88b8 fb4e 7dec f942 0120 0001 0000 0000  ...N}..B. ......
+00000070: 0001 0474 6573 7403 636f 6d00 0001 0001  ...test.com.....
+00000080: 0000 2910 0000 0000 0000 0c00 0a00 083f  ..)............?
+00000090: 9eaf de17 3709 404e 1901 2000 0100 0000  ....7.@N.. .....
+000000a0: 0000 0103 3233 3803 3231 3103 3235 3103  ....238.211.251.
+000000b0: 3134 3207 696e 2d61 6464 7204 6172 7061  142.in-addr.arpa
+000000c0: 0000 0c00 0100 0029 1000 0000 0000 000c  .......)........
+000000d0: 000a 0008 06ea 1d4e f4b9 17a2 1032 0100  .......N.....2..
+000000e0: 0001 0000 0000 0000 0667 6f6f 676c 6503  .........google.
+000000f0: 636f 6d00 0010 0001 f76f 0100 0001 0000  com......o......
+00000100: 0000 0000 0667 6f6f 676c 6503 636f 6d00  .....google.com.
+00000110: 000f 0001 49a1 0100 0001 0000 0000 0000  ....I...........
+00000120: 0667 6f6f 676c 6503 636f 6d00 001d 0001  .google.com.....
+00000130: 9bbb 0100 0001 0000 0000 0000 0331 3034  .............104
+00000140: 0139 0331 3932 0236 3607 696e 2d61 6464  .9.192.66.in-add
+00000150: 7204 6172 7061 0000 0c00 0175 c001 0000  r.arpa.....u....
+00000160: 0100 0000 0000 0003 7777 7706 6e65 7462  ........www.netb
+00000170: 7364 036f 7267 0000 0100 01f0 d401 0000  sd.org..........
+00000180: 0100 0000 0000 0003 7777 7706 6e65 7462  ........www.netb
+00000190: 7364 036f 7267 0000 1c00 01fe e301 0000  sd.org..........
+000001a0: 0100 0000 0000 0003 7777 7703 6973 6303  ........www.isc.
+000001b0: 6f72 6700 00ff 0001 208a 0100 0001 0000  org..... .......
+000001c0: 0000 0000 0369 7363 036f 7267 0000 0200  .....isc.org....
+000001d0: 01f1 6101 0000 0100 0000 0000 0005 5f6c  ..a..........._l
+000001e0: 6461 7004 5f74 6370 0264 6306 5f6d 7364  dap._tcp.dc._msd
+000001f0: 6373 0b75 7465 6c73 7973 7465 6d73 056c  cs.utelsystems.l
+00000200: 6f63 616c 0000 2100 01                   ocal..!..
+```
+
+##  Fuzzing
+```
+ $ sudo docker cp dns.raw sweet_newton:/home/testing/dns-in
+ $ sudo docker exec -it sweet_newton /bin/bash
+ > afl-fuzz -d -i $WORKDIR/dns-in -o out-dns -N tcp://127.0.0.1/5353 -P DNS -D 10000 -K -R ./dnsmasq
+```
