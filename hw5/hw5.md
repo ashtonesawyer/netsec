@@ -242,6 +242,7 @@ target_mode       : default
 command_line      : afl-fuzz -d -i /opt/aflnet/tutorials/live555/in-rtsp/ -o out-live555 -N tcp://127.0.0.1/8554 -x /opt/aflnet/tutorials/live555/rtsp.dict -P RTSP -D 10000 -q 3 -s 3 -E -K -R ./testOnDemandRTSPServer 8554
 slowest_exec_ms   : 0
 peak_rss_mb       : 7
+```
 
 ## Replay
 ```
