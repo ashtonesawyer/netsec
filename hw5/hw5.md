@@ -391,7 +391,43 @@ then put them all together with `cat dns*.raw > dns.raw`.
 
 ![dnsmasq afl-net output](./img/afl-dns-o.png)
 
-I also fuzzed the server using the provided seeds to be able to compare 
-it with my own. 
+None of the replayable crashes caused `dnsmasq` to stop running, but they resulted in 0 responses.
+
+```
+ > ./dnsmasq
+dnsmasq: started, version 2.73rc6 cachesize 150
+dnsmasq: compile time options: IPv6 GNU-getopt no-DBus no-i18n no-IDN DHCP DHCPv6 no-Lua TFTP no-conntrack ipset auth no-DNSSEC loop-detect inotify
+dnsmasq: cleared cache
+ 
+ > for f in out-dns/replayable-crashes/*
+ > do
+ > if [ ! $f == 'out-dns/README.txt' ]; then
+ > afl-replay $f DNS 5353
+ > fi
+ > done
+
+--------------------------------
+Responses from server:0-
+++++++++++++++++++++++++++++++++
+Responses in details:
+
+--------------------------------
+--------------------------------
+Responses from server:0-
+++++++++++++++++++++++++++++++++
+Responses in details:
+
+--------------------------------
+...
+```
+
+I also fuzzed the server using the provided seeds to be able to compare it with my own. 
+
+```
+ > afl-fuzz -d -i $AFLNET/tutorials/dnsmasq/in-dns -o out-dns1 -N tcp://127.0.0.1/5353 -P DNS -D 10000 -K -R ./dnsmasq
+```
 
 ![dnsmasq afl-net output w/ provided seeds](./img/afl-dns-p.png)
+
+I ran the same loop as before (but replacing `out-dns` with `out-dns1`) to see if any of these would cause the server to stop
+running, but none of them did either. 
