@@ -324,18 +324,25 @@ test.com.               0       IN      A       5.5.5.5
 ```
 
 ## Getting seeds
+Because the packets to dnsmasq were MDNS packets, I also got some normal DNS packets that were sent to my
+default server. 
+
 ```
- > sudo tcpdump -w dns.pcap -i lo 
+ > sudo tcpdump -w dns.pcap 
+tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+
+ > dig google.com
+ > dig google.com NS
+
+ > sudo tcpdump -w dns1.pcap -i lo 
 tcpdump: listening on lo, link-type EN10MB (Ethernet), capture size 262144 bytes
 
- > dig @127.0.0.1 -p 5353 google.com
- > dig @127.0.0.1 -p 5353 google.com NS
  > dig @127.0.0.1 -p 5353 test.com
  > dig @127.0.0.1 -p 5353 -x 142.251.211.238
 
 ```
 
-I openned `dns.pcap` in Wireshark and exported the requests from each UDP stream into its own file,
+I opened `dns.pcap` and `dns1.pcap` in Wireshark and exported the requests from each UDP stream into its own file,
 then put them all together with `cat dns*.raw > dns.raw`.
 
 ```
@@ -381,3 +388,10 @@ then put them all together with `cat dns*.raw > dns.raw`.
  $ sudo docker exec -it sweet_newton /bin/bash
  > afl-fuzz -d -i $WORKDIR/dns-in -o out-dns -N tcp://127.0.0.1/5353 -P DNS -D 10000 -K -R ./dnsmasq
 ```
+
+![dnsmasq afl-net output](./img/afl-dns-o.png)
+
+I also fuzzed the server using the provided seeds to be able to compare 
+it with my own. 
+
+![dnsmasq afl-net output w/ provided seeds](./img/afl-dns-p.png)
