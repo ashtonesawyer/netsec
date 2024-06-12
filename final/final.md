@@ -16,7 +16,7 @@ Trek stack and if the UDP queue is not empty, then this heap overflow can lead t
 - UDP receive queue isn't empty
 
 # Suricata Rule
-The rule itself if simple. If it's an IPv4 packet with IP protocol 4 (IP-in-IP tunnelling), then check it with the lua script. 
+The rule itself is simple. If it's an IPv4 packet with IP protocol 4 (IP-in-IP tunneling), then check it with the Lua script. 
 
 ```
 alert ip any any -> any any (msg:"Tunnelling fragments -- CVE-2020-11896"; ip_proto:4; lua:cve-2020-11896.lua; sid: 11111111;)
@@ -56,7 +56,7 @@ In this case, there are multiple steps to inspecting the packet:
 
 ### Inner Packet
 The IP header will start with the IP version (4) and the length (generally 5) as nibbles, so 
-should start with the hex byte 0x45. `string.find()` will return the first occurance within the
+should start with the hex byte 0x45. `string.find()` will return the first occurrence within the
 string, so we can start there. 
 Then, because the IP header is  20 bytes, we know that the first byte of the 
 inner packet's header will be 20 bytes after the 0x45.
@@ -96,7 +96,7 @@ multiplication it is.
 ```
 
 ### Actual Length + Returning
-A UDP header is 8 bytes long, so adding that to the 20 byte IPv4 header
+A UDP header is 8 bytes long, so adding that to the 20-byte IPv4 header
 means that the data starts on the 29th byte and it should go until the end of
 the packet.
 
@@ -161,7 +161,7 @@ end
 ```
 
 # Testing
-There are two problems with this script that I can forsee causing false negatives:
+There are two problems with this script that I can foresee causing false negatives:
 1. It relies on the IP headers not using the options field
 2. One of the MAC addresses in the Ethernet layer might have a 0x45 in it
 
@@ -170,7 +170,7 @@ will be different to account for the different header size. I don't see this bei
 problem, however, as my understanding is that the options field isn't used often.
 
 The second problem is because if a 0x45 byte shows up earlier in the packet than expected, then 
-the calculations involing which bytes should be which fields will be thrown off. If this becomes a 
+the calculations involving  which bytes should be which fields will be thrown off. If this becomes a 
 problem, a check could be added to the script that the 45 isn't within the first 14 bytes
 (the length of an ethernet header). 
 
@@ -233,7 +233,7 @@ The actual pcap was created using `tcpdump` to capture the packets sent by the s
 It has 7 packets in total, 6 of which are 3 fragmented packets, 2 of which are formed to trigger the rule. 
 
 ## Running Tests
-I deleted suricata's `fast.log` before each of my tests to make it easy to see how many alerts were triggered for a 
+I deleted Suricata's `fast.log` before each of my tests to make it easy to see how many alerts were triggered for a 
 particular run, and I used the `-S` flag with my rules file so that any other rules I might have in my
 config file would be skipped and only the rule I was testing would run. 
 
