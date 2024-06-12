@@ -1,7 +1,7 @@
 [[_TOC_]]
 
 # Overview
-[CVE-2020-11896](jsof-tech.com/wp-content/uploads/2020/06/JSOF_Ripple20_Technical_Whitepaper_June2020.pdf) is one 
+[CVE-2020-11896](https://jsof-tech.com/wp-content/uploads/2020/06/JSOF_Ripple20_Technical_Whitepaper_June2020.pdf) is one 
 of the Ripple20 bugs, a set of vulnerabilities found in the widely used Trek TCP/IP stack.
 This particular vulnerability stems from a weak trim function that is called when the total length as given in the
 IP header is smaller than the total available data. With fragmented IPv4-in-IPv4 tunneling, the sanity checks
