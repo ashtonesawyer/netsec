@@ -1,4 +1,14 @@
-[[_TOC_]]
+- [Overview](#overview)
+  - [Requirements](#requirements)
+- [Suricata Rule](#suricata-rule)
+  - [Script](#script)
+    - [Inner Packet](#inner-packet)
+    - [UDP Listed Length](#udp-listed-length)
+    - [Actual Length + Returning](#actual-length--returning)
+    - [Full Script](#full-script)
+- [Testing](#testing)
+  - [Generating Packets](#generating-packets)
+  - [Running Tests](#running-tests)
 
 # Overview
 [CVE-2020-11896](https://www.jsof-tech.com/wp-content/uploads/2020/06/JSOF_Ripple20_Technical_Whitepaper_June20.pdf) is one 
