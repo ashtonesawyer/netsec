@@ -1,4 +1,15 @@
-[[_TOC_]]
+- [Docker](#docker)
+  - [Building + Running](#building--running)
+- [Exercise 1 - Live555](#exercise-1---live555)
+  - [Patching](#patching)
+  - [Getting the Seeds](#getting-the-seeds)
+  - [Fuzzing](#fuzzing)
+  - [Replay](#replay)
+ - [Exercise 2 - Dnsmasq](#exercise-2---dnsmasq)
+  - [Setup](#setup)
+    - [Testing](#testing)
+  - [Getting seeds](#getting-seeds)
+  - [Fuzzing](#fuzzing-1)
 
 # Docker
 I used the docker file that was provided in the homework:
